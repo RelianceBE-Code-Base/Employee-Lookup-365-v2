@@ -1,0 +1,52 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.14/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.14",
+    "version": "1.0.0",
+    "id": "{{state.fx-resource-appstudio.teamsAppId}}",
+    "packageName": "com.microsoft.teams.extension",
+    "developer": {
+        "name": "Reliance Infosystems Limited",
+        "websiteUrl": "{{state.fx-resource-frontend-hosting.endpoint}}",
+        "privacyUrl": "{{state.fx-resource-frontend-hosting.endpoint}}{{state.fx-resource-frontend-hosting.indexPath}}/privacy",
+        "termsOfUseUrl": "{{state.fx-resource-frontend-hosting.endpoint}}{{state.fx-resource-frontend-hosting.indexPath}}/termsofuse"
+    },
+    "icons": {
+        "color": "{{config.manifest.icons.color}}",
+        "outline": "{{config.manifest.icons.outline}}"
+    },
+    "name": {
+        "short": "{{config.manifest.appName.short}}",
+        "full": "{{config.manifest.appName.full}}"
+    },
+    "description": {
+        "short": "{{config.manifest.description.short}}",
+        "full": "As your organization grows in size and scales across different regions, it becomes hard to keep track of all employees. The distance and connection between your employees grows wider. The Employee Lookup application brings all employees within your organization together by making them aware of each other.\nIt makes it possible for your employees to see all members at a glance, it allows them to see all departments within the organization, they get to know when departments increase, and gives them the ability to check out all the employees in a particular department.\nThey can also search by employee name, see results of all profiles that match their search and click to view more details about a particular employee.\n\nHow the application is laid out:\n* When you open up the app, you would see a dropdown, a search box and a list of all employees within your organization on the left section. And on the right section, details about yourself.\n* With the dropdown, you can filter down the employee listing based on departments available within your organization.\n* A search can also be made by entering an alphabet(s) or a name to search for employees by name. Corresponding results of employees with the name or whose name contains the sequence of alphabets comes up.\n* When you click on an employee's profile card, the details of the employee gets displayed on the right section of the screen. \n\nPlease note: To use the application, your organization must have active users within your Microsoft 365 tenant and an Azure AD app registration would also be needed. Please get in touch with our support team at support@relianceinfosystems.com for more details."
+    },
+    "accentColor": "#FFFFFF",
+    "bots": [],
+    "composeExtensions": [],
+    "configurableTabs": [],
+    "staticTabs": [
+        {
+            "entityId": "index0",
+            "name": "Personal Tab",
+            "contentUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}{{{state.fx-resource-frontend-hosting.indexPath}}}/tab",
+            "websiteUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}{{{state.fx-resource-frontend-hosting.indexPath}}}/tab",
+            "scopes": [
+                "personal"
+            ]
+        }
+    ],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": [
+        "{{state.fx-resource-frontend-hosting.domain}}"
+    ],
+    "webApplicationInfo": {
+        "id": "{{state.fx-resource-aad-app-for-teams.clientId}}",
+        "resource": "{{{state.fx-resource-aad-app-for-teams.applicationIdUris}}}"
+    },
+    "showLoadingIndicator": true
+}

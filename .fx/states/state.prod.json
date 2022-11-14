@@ -1,0 +1,39 @@
+{
+    "solution": {
+        "provisionSucceeded": true,
+        "teamsAppTenantId": "5d2e66da-54ba-4897-82ee-60eeb8ce5994",
+        "subscriptionId": "d99bef3c-c42f-4118-b0e2-04ecfd87789a",
+        "subscriptionName": "Microsoft Azure Sponsorship",
+        "tenantId": "c043e99a-5c7a-4aab-806e-2256c74620f3",
+        "needCreateResourceGroup": true,
+        "resourceGroupName": "employee_lookup-prod-rg",
+        "location": "East US",
+        "resourceNameSuffix": "3517ba"
+    },
+    "fx-resource-appstudio": {
+        "tenantId": "5d2e66da-54ba-4897-82ee-60eeb8ce5994",
+        "teamsAppId": "f3d179e9-3fc2-45cc-8858-8ca1788b94ba"
+    },
+    "fx-resource-frontend-hosting": {
+        "indexPath": "/index.html#",
+        "domain": "employeelookuptab.z13.web.core.windows.net",
+        "endpoint": "https://employeelookuptab.z13.web.core.windows.net",
+        "storageResourceId": "/subscriptions/d99bef3c-c42f-4118-b0e2-04ecfd87789a/resourceGroups/employee_lookup-prod-rg/providers/Microsoft.Storage/storageAccounts/employeelookuptab"
+    },
+    "fx-resource-aad-app-for-teams": {
+        "clientId": "2f96c39a-447a-4e3c-a247-f2b6136b87a8",
+        "clientSecret": "{{fx-resource-aad-app-for-teams.clientSecret}}",
+        "objectId": "696dc378-e0bf-478a-8364-eb9e7fff52a6",
+        "oauth2PermissionScopeId": "0d86dfb1-782b-49e4-9ab1-b2fc10dc7d73",
+        "tenantId": "5d2e66da-54ba-4897-82ee-60eeb8ce5994",
+        "oauthHost": "https://login.microsoftonline.com",
+        "oauthAuthority": "https://login.microsoftonline.com/5d2e66da-54ba-4897-82ee-60eeb8ce5994",
+        "applicationIdUris": "api://employeelookuptab.z13.web.core.windows.net/2f96c39a-447a-4e3c-a247-f2b6136b87a8",
+        "frontendEndpoint": "https://employeelookuptab.z13.web.core.windows.net"
+    },
+    "fx-resource-identity": {
+        "identityName": "employeelookup",
+        "identityResourceId": "/subscriptions/d99bef3c-c42f-4118-b0e2-04ecfd87789a/resourceGroups/employee_lookup-prod-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/employeelookup",
+        "identityClientId": "8380d389-382c-412f-96d8-01f9e64b4a9d"
+    }
+}

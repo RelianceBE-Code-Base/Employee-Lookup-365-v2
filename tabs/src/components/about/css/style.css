@@ -1,0 +1,404 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap');
+
+.homepage,
+.privacy,
+.terms-of-use {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+
+  font-family: 'Lato', sans-serif, Arial, Helvetica;
+  color: #333;
+  line-height: 1.6;
+}
+
+.homepage ul,
+.privacy ul,
+.terms-of-use ul {
+  list-style-type: none;
+}
+
+.homepage a,
+.privacy a,
+.terms-of-use a {
+  text-decoration: none;
+  color: #333;
+}
+
+.homepage p,
+.privacy p,
+.terms-of-use p {
+  margin: 10px 0;
+}
+
+.homepage img,
+.privacy img,
+.terms-of-use img {
+  width: 100%;
+}
+
+/* Navbar */
+.navbar {
+  /* background-color: #f6f9fc; */
+  height: 70px;
+  border-bottom: solid 1px #c2c9cd;
+  font-family: sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.navbar h1 {
+  font-size: 23px;
+  /* font-family: 'Lato'; */
+  color: #333;
+
+  /* This was used for all h1 */
+  /* font-weight: 300;
+  line-height: 1.2;
+  margin: 10px 0; */
+}
+
+.navbar ul {
+  display: flex;
+}
+
+.navbar a {
+  /* color: #fff; */
+  padding: 10px;
+  margin: 0 5px;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+.navbar a:hover {
+  /* border-bottom: 2px #fff solid; */
+  color: #c2c9cd;
+}
+
+.navbar .flex {
+  justify-content: space-between;
+}
+
+
+
+/* Homepage */
+/* Showcase */
+.showcase {
+  height: calc(100% - 70px);
+  padding-top: 56px;
+  /* background-color: #f6f9fc; */
+  background-image: linear-gradient(180deg, white, #f6f9fc);
+  position: relative;
+}
+
+.showcase .grid {
+  /* height: 100%; */
+  overflow: visible;
+  grid-template-columns: 40% auto;
+  justify-content: start;
+  gap: 30px;
+}
+
+.showcase h1,
+.privacy-text h1,
+.terms-of-use-text h1 {
+  font-size: 40px;
+
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  line-height: 1.2;
+  color: #333;
+  margin: 10px 0;
+}
+
+.showcase p,
+.privacy-text p,
+.terms-of-use-text p {
+  margin: 20px 0;
+  font-size: 16px;
+}
+
+.showcase .btn {
+  color: white;
+  font-size: 16px;
+}
+
+.showcase .container {
+  max-width: 1200px;
+}
+
+
+
+/* .showcase-text {
+  animation: slideInFromLeft 1s ease-in;
+} */
+
+
+
+.showcase-image-container {
+  position: relative;
+  /* top: -30px; */
+  /* animation: slideInFromRight 1s ease-in; */
+  
+}
+
+/* .showcase-image-container .desktop-image {
+  width: 550px;
+}
+
+.showcase-image-container .mobile-image {
+  width: 180px;
+  position: absolute;
+  z-index: 1;
+  top: 80px;
+  right: -100px;
+} */
+
+
+
+/* .showcase::before,
+.showcase::after {
+  content: '';
+  position: absolute;
+  height: 150px;
+  bottom: -100px;
+  right: 0;
+  left: 0;
+  background: #fff;
+  transform: skewY(-3deg);
+  -webkit-transform: skewY(-3deg);
+  -moz-transform: skewY(-3deg);
+  -ms-transform: skewY(-3deg);
+} */
+
+
+
+/* Extension */
+.section-header {
+  background-color: #44458e;
+  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.app-features .section-header {
+  /* margin-top: 136px; */
+}
+
+.app-features p {
+  font-size: 16px;
+}
+
+.app-features h1,
+.app-features-mobile h1,
+.the-build h1 {
+  font-size: 30px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  color: white;
+  line-height: 1.2;
+}
+
+.app-features .grid {
+  padding: 50px 20px;
+}
+
+.app-features-filter,
+.app-features-profile,
+.app-features-mobile {
+  background-color: #f6f9fc;
+}
+
+.app-features-mobile .grid {
+  grid-template-columns: repeat(4, 1fr);
+  justify-items: center;
+  padding: 50px 20px;
+}
+
+.app-features-mobile .item {
+  width: 180px;
+}
+
+.the-build .grid {
+  padding: 48px 20px;
+}
+
+.the-build-tools {
+  margin: 0 auto;
+}
+
+.the-build p {
+  font-size: 16px;
+}
+
+.the-build span,
+.privacy-text span,
+.terms-of-use-text span {
+  color: #44458e;
+}
+
+/* Footer */
+.footer {
+  text-align: right;
+  padding: 24px 40px;
+  border-top: solid 1px #c2c9cd;
+}
+
+.footer p {
+  display: inline;
+}
+
+.footer a {
+  padding-right: 40px;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+
+
+/* Terms of Use Page */
+.terms-of-use-text .container {
+  max-width: 1050px;
+  padding-top: 56px;
+  padding-bottom: 40px;
+}
+
+.terms-of-use-text>div {
+  position: relative;
+  z-index: 1;
+}
+
+.terms-of-use-text h1 {
+  font-family: sans-serif;
+}
+
+
+/* Privacy Page */
+.privacy-text .container {
+  max-width: 1050px;
+  padding-top: 56px;
+  padding-bottom: 40px;
+}
+
+.privacy-text>div {
+  position: relative;
+  z-index: 1;
+}
+
+.privacy-text h1 {
+  font-family: sans-serif;
+}
+
+
+/* Animations */
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(100%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+
+/* Tablets and under */
+@media (max-width: 768px) {
+  .grid,
+  .showcase .grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .showcase {
+    height: auto;
+    padding-top: 20px;
+  }
+
+  .showcase-text {
+    text-align: center;
+    margin-top: 0px;
+    /* animation: slideInFromTop 1s ease-in; */
+  }
+
+  .showcase-image-container {
+    justify-self: center;
+    margin: 20px auto;
+    margin-bottom: 40px;
+    /* animation: slideInFromBottom 1s ease-in; */
+  }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+  .navbar {
+    height: 140px;
+  }
+
+  .navbar .flex {
+    flex-direction: column;
+    justify-content: start;
+  }
+
+  .navbar ul {
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .showcase-form {
+    width: 300px;
+  }
+
+  .app-features-mobile .grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    gap: 40px;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 24px 10px;
+  }
+  
+  .footer p {
+    display: inline;
+    font-size: 13px;
+  }
+  
+  .footer a {
+    padding-right: 15px;
+  }
+}

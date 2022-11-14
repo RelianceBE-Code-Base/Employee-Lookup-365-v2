@@ -1,0 +1,387 @@
+body,
+#root>div {
+    background-color: #ffffff;
+}
+
+span {
+    display: inline-block;
+    margin: 5px;
+}
+
+
+/* clean up activities */
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(490px, 1fr) 470px;
+    gap: 2px;
+    min-height: 100%
+}
+
+
+/* Section 1 */
+.listing {
+    /* background-color: white; */
+    padding-top: 62px;
+    position: relative;
+}
+
+.listing-grid-mobile {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    justify-items: center;
+}
+
+.card-dimensions {
+    padding: 10px 0 0 0;
+    margin-bottom: 9px !important
+}
+
+
+/* ============ Mobile Header ============= */
+.mobile-listing-header {
+    margin: 0px;
+    display: none;
+    background-color: white;
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    z-index: 1;
+    padding-top: 10px;
+    top: 0px;
+}
+
+.search-input-container {
+    text-align: center;
+}
+
+.search-input-container input {
+    margin: 0px;
+    padding: 10px 10px;
+    width: 300px;
+    border: solid 0px rgb(51, 51, 51);
+    background-color: #EEEEEE;
+}
+
+.search-input-container input:focus {
+    outline: none;
+    border: solid 2px #d3d3d3;
+    border-left-width: 5px;
+    background-color: white;
+}
+
+.filter-container {
+    position: relative;
+}
+
+.filter-action-text-box {
+    text-align: center;
+}
+
+.filter-container button {
+    padding: 0px 6px 0px 0px;
+    margin: 0px;
+    border: none;
+    background-color: transparent;
+}
+
+.filter-list-box {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    max-width: 210px;
+    max-height: 260px;
+    overflow-y: scroll;
+    box-shadow: 0.1px -0.1px 1px #888888;
+    background-color: white;
+}
+
+.filter-list-box ul {
+    list-style-type: none;
+    padding: 0px 0px 0px 10px;
+}
+
+.filter-list-box ul li {
+    padding: 4px 0px 4px 10px;
+}
+
+.filter-list-box ul li:hover {
+    background-color: #EEEEEE;
+}
+
+/* ========================================= */
+
+
+/* ============ Desktop Header ============= */
+.listing-header-wrapper {
+    padding: 20px 15px;
+    position: fixed;
+    right: 472px;
+    left: 0px;
+    z-index: 1;
+    top: 0px;
+    background-color: white;
+}
+
+.listing-header {
+    max-width: 460px;
+    min-width: 460px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: #EEEEEE;
+    margin: 0 auto;
+}
+
+.listing-header-dropdown {
+    margin: 0;
+    padding: 0;
+    border: solid 1px RGBA(223, 223, 223, 1);
+    max-width: 230px;
+}
+
+.listing-header-search {
+    margin: 0;
+    padding: 0;
+    border: solid 1px RGBA(223, 223, 223, 1);
+    border-left: 0;
+}
+
+/* ========================================= */
+
+
+.profile-cards-container {
+    margin-top: 20px;
+}
+
+
+/* section 2 */
+.display {
+    /* background-color: white; */
+    border-left: solid 2px #F3F2F1;
+}
+
+.display-wrapper {
+    margin: 0 auto;
+    position: fixed;
+    width: 470px;
+}
+
+.display-profile {
+    width: 380px;
+    margin: 20px auto;
+    /* To position the chat button relative to this div */
+    position: relative;
+}
+
+.display-profile .photo {
+    padding: 24px 24px 10px;
+}
+
+.display-profile .photo img {
+    border-radius: 50%;
+    width: 122px;
+    height: 122px;
+}
+
+.display-profile-item {
+    margin: "10px 5px";
+}
+
+
+
+.display-back-button {
+    padding-right: 12px;
+    background-color: rgba(0, 0, 0, 0);
+    border: none
+}
+
+.display-back-button:focus {
+    border: solid 1px;
+}
+
+.contact-button {
+    position: absolute;
+    right: 0px;
+    background-color: #EEEEEE;
+    border: solid 1px RGBA(223, 223, 223, 1);
+    padding: 5px;
+}
+
+.contact-button .contact-button-chat {
+    margin-right: 5px;
+}
+
+
+@media screen and (max-width: 1084px) {
+    .layout {
+        grid-template-columns: minmax(490px, 1fr) 430px;
+    }
+
+    .display-wrapper {
+        width: 430px;
+    }
+
+    .contact-button {
+        background-color: white;
+        border: none;
+    }
+
+    .listing-header-wrapper {
+        right: 432px;
+    }
+
+    .buttons-container {
+        display: flex;
+        justify-content: space-between;
+        padding-right: 10px;
+    }
+
+    .contact-button {
+        position: static;
+        right: 0px;
+        padding: 5px;
+    }
+}
+
+
+/* authentication page */
+.auth {
+    margin-top: 30vh;
+}
+
+.auth .profile {
+    margin: auto;
+}
+
+.auth h2 {
+    text-align: center;
+}
+
+.auth button {
+    display: block;
+    margin: 32px auto;
+}
+
+
+/* Application Install Error */
+.install-error-wrapper {
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.install-error {
+    width: 600px;
+    padding: 20px;
+    text-align: center;
+    background-color: #fff;
+    color: #333;
+}
+
+.install-error p {
+    margin: 0;
+    padding: 0;
+}
+
+.install-error .logo {
+    width: 40px;
+    margin-bottom: 20px;
+}
+
+.install-error .error-decision {
+    display: grid;
+    grid-template-columns: 1fr 50px 1fr;
+    gap: 2px;
+}
+
+.install-error .install-error-head {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.install-error .error-decision {
+    margin-top: 40px;
+    margin-bottom: 10px;
+}
+
+.install-error .contact {
+    color: #44458e;
+    text-decoration: none;
+}
+
+.install-error .link:hover {
+    text-decoration: underline;
+}
+
+
+
+@media screen and (max-width: 820px) {
+    .tab-page {
+        background-color: white;
+    }
+
+    .layout {
+        display: block;
+        margin-bottom: 1px;
+        border: solid 1px white;
+        /* adding a border to the div makes the tab-page background color cover totally */
+    }
+
+
+    /* section 1 */
+    .listing {
+        padding-top: 78px;
+    }
+
+    .mobile-listing-header {
+        display: block;
+    }
+
+    .listing-header-wrapper {
+        margin-top: 0px;
+        display: none;
+    }
+
+    .listing-header {
+        margin-top: 0px;
+        display: none;
+    }
+
+    .profile-cards-container {
+        margin-top: 0px;
+    }
+
+    .card-dimensions {
+        padding: 15px 0 0 0 !important;
+        margin-bottom: 0px !important;
+        width: 300px !important;
+        height: 150px !important;
+    }
+
+
+    /* section 2 */
+    .display-wrapper {
+        margin: auto;
+        position: fixed;
+        width: 100%;
+    }
+
+    .display-profile {
+        margin: auto;
+    }
+}
+
+/* Archived to learn how it works and reference it for usage*/
+/* .text input:not(:focus) {
+    background-color: #FFF;
+} */
