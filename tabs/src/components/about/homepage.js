@@ -127,8 +127,8 @@ class Home extends React.Component {
                             <h2>And more...</h2>
                         </div>
                         <div>
-                            <p>The employee lookup application is built leveraging different Microsoft technologies to provide you with the seamleass experience of having access to everyone in your organization at one glance. These includes the Azure Active Directory and the Microsoft Graph.</p>
-                            <p>To use the Employee Lookup application, your admin staff would create an Azure AD application, which would be connected to our application code to bring you this experience. This is to give us access to the Office 365 users within your organization. </p>
+                            <p>The employee lookup application is built leveraging different Microsoft technologies to provide you with the experience of having access to everyone in your organization at one glance. These includes the Azure Active Directory and the Microsoft Graph.</p>
+                            <p>To use the Employee Lookup application, your admin staff would create an Azure AD application, which would be connected to the application code to bring you this experience. This is to give secure access to the Office 365 users within your organization. </p>
                             <p>And we wouldn't just jump in, an admin would have to consent to the permissions before anyone within your organization can use the app.</p>
                             <p>We are here to make the configuration easy for you, please contact support at <span>be@relianceinfosystems.com</span></p>
                         </div>

@@ -9,7 +9,7 @@ import { HashRouter as Router, Route } from 'react-router-dom';
 import Home from './about/homepage';
 import Privacy from './about/Privacy';
 import TermsOfUse from './about/TermsOfUse';
-import Tab from './Tab';
+import Tab from './landing';
 import TabConfig from './TabConfig';
 import Support from './about/Support';
 

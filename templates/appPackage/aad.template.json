@@ -23,6 +23,14 @@
                 {
                     "id": "User.Read",
                     "type": "Scope"
+                },
+                {
+                    "id": "User.ReadBasic.All",
+                    "type": "Scope"
+                },
+                {
+                    "id": "User.Read.All",
+                    "type": "Scope"
                 }
             ]
         }

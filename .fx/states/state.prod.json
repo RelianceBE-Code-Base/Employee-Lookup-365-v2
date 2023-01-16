@@ -6,34 +6,42 @@
         "subscriptionName": "Microsoft Azure Sponsorship",
         "tenantId": "c043e99a-5c7a-4aab-806e-2256c74620f3",
         "needCreateResourceGroup": true,
-        "resourceGroupName": "employee_lookup-prod-rg",
+        "resourceGroupName": "EmployeeLookup-prod-rg",
         "location": "East US",
-        "resourceNameSuffix": "3517ba"
+        "resourceNameSuffix": "78cb2c"
     },
     "fx-resource-appstudio": {
         "tenantId": "5d2e66da-54ba-4897-82ee-60eeb8ce5994",
-        "teamsAppId": "f3d179e9-3fc2-45cc-8858-8ca1788b94ba"
+        "teamsAppId": "8f0068ed-3fbe-4cfb-8b79-d566e9322fcf"
     },
     "fx-resource-frontend-hosting": {
         "indexPath": "/index.html#",
         "domain": "employeelookuptab.z13.web.core.windows.net",
         "endpoint": "https://employeelookuptab.z13.web.core.windows.net",
-        "storageResourceId": "/subscriptions/d99bef3c-c42f-4118-b0e2-04ecfd87789a/resourceGroups/employee_lookup-prod-rg/providers/Microsoft.Storage/storageAccounts/employeelookuptab"
+        "storageResourceId": "/subscriptions/d99bef3c-c42f-4118-b0e2-04ecfd87789a/resourceGroups/EmployeeLookup-prod-rg/providers/Microsoft.Storage/storageAccounts/employeelookuptab"
     },
     "fx-resource-aad-app-for-teams": {
-        "clientId": "2f96c39a-447a-4e3c-a247-f2b6136b87a8",
+        "clientId": "bfe90281-842c-4505-beca-0b22377d6988",
         "clientSecret": "{{fx-resource-aad-app-for-teams.clientSecret}}",
-        "objectId": "696dc378-e0bf-478a-8364-eb9e7fff52a6",
-        "oauth2PermissionScopeId": "0d86dfb1-782b-49e4-9ab1-b2fc10dc7d73",
+        "objectId": "a60d8770-6b43-43c6-8495-c2be6609a447",
+        "oauth2PermissionScopeId": "62904b29-1d9f-462b-8cf3-c0f1d4bfdb7a",
         "tenantId": "5d2e66da-54ba-4897-82ee-60eeb8ce5994",
         "oauthHost": "https://login.microsoftonline.com",
         "oauthAuthority": "https://login.microsoftonline.com/5d2e66da-54ba-4897-82ee-60eeb8ce5994",
-        "applicationIdUris": "api://employeelookuptab.z13.web.core.windows.net/2f96c39a-447a-4e3c-a247-f2b6136b87a8",
+        "applicationIdUris": "api://employeelookuptab.z13.web.core.windows.net/bfe90281-842c-4505-beca-0b22377d6988",
         "frontendEndpoint": "https://employeelookuptab.z13.web.core.windows.net"
     },
     "fx-resource-identity": {
         "identityName": "employeelookup",
-        "identityResourceId": "/subscriptions/d99bef3c-c42f-4118-b0e2-04ecfd87789a/resourceGroups/employee_lookup-prod-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/employeelookup",
-        "identityClientId": "8380d389-382c-412f-96d8-01f9e64b4a9d"
+        "identityResourceId": "/subscriptions/d99bef3c-c42f-4118-b0e2-04ecfd87789a/resourceGroups/EmployeeLookup-prod-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/employeelookup",
+        "identityClientId": "37770194-4b0b-4923-9d01-277736e0bdbe"
+    },
+    "fx-resource-function": {
+        "sku": "B1",
+        "appName": "employeelookupapi",
+        "domain": "employeelookupapi.azurewebsites.net",
+        "appServicePlanName": "employeelookupapi",
+        "functionAppResourceId": "/subscriptions/d99bef3c-c42f-4118-b0e2-04ecfd87789a/resourceGroups/EmployeeLookup-prod-rg/providers/Microsoft.Web/sites/employeelookupapi",
+        "functionEndpoint": "https://employeelookupapi.azurewebsites.net"
     }
 }

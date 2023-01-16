@@ -26,6 +26,28 @@
             "name": "aad-app",
             "provision": true,
             "deploy": true
+        },
+        {
+            "name": "teams-api",
+            "hosting": "azure-function",
+            "functionNames": [
+                "api"
+            ],
+            "deploy": true,
+            "build": true,
+            "folder": "api",
+            "artifactFolder": "api"
+        },
+        {
+            "name": "azure-function",
+            "scenario": "Api",
+            "provision": true,
+            "connections": [
+                "identity",
+                "aad-app",
+                "teams-tab",
+                "teams-api"
+            ]
         }
     ],
     "isM365": true,
@@ -34,7 +56,9 @@
         "name": "fx-solution-azure",
         "version": "1.0.0",
         "hostType": "Azure",
-        "azureResources": [],
+        "azureResources": [
+            "function"
+        ],
         "capabilities": [
             "Tab",
             "TabSSO"
@@ -46,7 +70,9 @@
             "fx-resource-api-connector",
             "fx-resource-aad-app-for-teams",
             "fx-resource-frontend-hosting",
-            "fx-resource-identity"
+            "fx-resource-identity",
+            "fx-resource-function"
         ]
-    }
+    },
+    "defaultFunctionName": "api"
 }

@@ -1,26 +1,27 @@
 import './App.css';
 import './Tab.css';
 import React from 'react';
-import { TeamsFx, createMicrosoftGraphClient } from '@microsoft/teamsfx';
+import { TeamsFx, BearerTokenAuthProvider, createApiClient } from '@microsoft/teamsfx';
 import * as microsoftTeams from '@microsoft/teams-js';
-import { Button, Dropdown, Input, Flex, Card, Avatar, Text, Grid } from "@fluentui/react-northstar"
+import { Dropdown, Input, Flex, Card, Avatar, Text } from "@fluentui/react-northstar"
 import {
     SearchIcon, BriefcaseIcon, EmailIcon, AppFolderIcon, CallIcon, ChevronStartIcon,
     FilterIcon
 } from "@fluentui/react-icons-northstar";
+import { Buffer } from "buffer"
 
-import { Profile, } from "./Profile";
+// import { Profile, } from "./Profile";
 import defaultPhoto from '../images/default-photo.png';
 import appLogo from './about/images/logo_2_30_x_30.png';
+import config from '../lib/config';
 
-
-class Tab extends React.Component {
+class TabImplentation extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             userInfo: {},
-            showLoginPage: undefined,
+            showConsentPage: false,
             allUsers: [],
             departments: [],
             selectedDepartment: "",
@@ -31,87 +32,69 @@ class Tab extends React.Component {
             onSmallScreen: undefined,
             showProfileListing: undefined,
             showProfileDisplay: undefined,
-            isConfigured: undefined,
-            platformInfo: {},
+            consentErrorText: "",
+            consentErrorHeader: "",
+            hostName: ""
         }
     }
 
     async componentDidMount() {
-        await this.initTeamsSDK();
         await this.initTeamsFx();
         await this.initData();
-        console.log(this.state.allUsers);
-    }
-
-    async initTeamsSDK() {
-        try {
-            await microsoftTeams.app.initialize();
-            const context = await microsoftTeams.app.getContext();
-
-            if (Object.values(microsoftTeams.HostName).includes(context.app.host.name)) {
-                microsoftTeams.app.notifySuccess();
-            }
-        } catch (error) {
-            microsoftTeams.app.notifyFailure(
-                {
-                    reason: microsoftTeams.app.FailedReason.Timeout,
-                    message: error
-                }
-            )
-        }
     }
 
     async initTeamsFx() {
         const teamsfx = new TeamsFx();
-        // Get the user info from access token and set tenant's configured state
+        // Get the user info from access token
         let userInfo;
         try {
             userInfo = await teamsfx.getUserInfo();
-
-            this.setState({
-                userInfo: userInfo,
-                isConfigured: true
-            });
-        } catch (error) {
-            // This is used to catch the error that occurs when app is deployed
-            // on a tenant that's not configured yet
-            if (error.message?.includes("resourceDisabled")) {
-                this.setState({
-                    isConfigured: false
-                });
-            }
+            this.setState({ userInfo: userInfo });
+        } catch (err) {
+            console.log(err);
         }
 
         this.teamsfx = teamsfx;
-        this.scope = ["User.Read", "User.ReadBasic.All", "User.Read.All", "Contacts.Read"];
-        const platformInfo = await this.getPlatformInfo();
-        this.setState({
-            platformInfo: platformInfo,
-        })
+        this.scope = ["User.Read", "User.ReadBasic.All", "User.Read.All"];
     }
 
     async initData() {
-        if (!await this.checkIsConsentNeeded()) {
-            // Initialize graph client
-            const graphClient = createMicrosoftGraphClient(this.teamsfx, this.scope);
-            this.graphClient = graphClient;
+        try {
+            // Initialize Azure Functions API Client
+            const credential = this.teamsfx.getCredential();
+            const apiBaseUrl = config.apiEndpoint + "/api/";
+            this.apiClient = createApiClient(
+                apiBaseUrl,
+                new BearerTokenAuthProvider(async () => (await credential.getToken("")).token)
+            );
 
             // Check user's device screen size
             await this.checkScreenCategory();
 
-            // fetch all users without profile photo
+            // set host name
+            await this.getHostName();
+
+            // get all users without profile photo from azure functions
             await this.getAllUsers();
 
-            // set default selected user to currently logged-in user
-            this.setState({
-                selectedUser: this.state.userInfo.displayName
-            });
+            // set default selected user to currently logged in user
+            this.setState({ selectedUser: this.state.userInfo.objectId });
 
             // extract department for dropdown
             await this.setDepartments();
 
-            // fetch all users' profile photo
+            // get all users with their photo from azure functions
             await this.getUsersPhotos();
+        } catch (err) {
+            if (err.message.includes("invalid_grant")) {
+                this.setState({ showConsentPage: true })
+            } else if (err.message.includes("Unable to get")) {
+                alert(err.message);
+            } else {
+                // alert("An error occured!");
+                console.log(err);
+                alert(err);
+            }
         }
     }
 
@@ -119,92 +102,57 @@ class Tab extends React.Component {
         try {
             // Popup login page to get user's access token
             await this.teamsfx.login(this.scope);
+            this.setState({ showConsentPage: false });
+            await this.initData();
         } catch (err) {
-            if (err instanceof Error && err.message?.includes("CancelledByUser")) {
-                const helpLink = "https://aka.ms/teamsfx-auth-code-flow";
-                err.message +=
-                    "\nIf you see \"AADSTS50011: The reply URL specified in the request does not match the reply URLs configured for the application\" " +
-                    "in the popup window, you may be using unmatched version for TeamsFx SDK (version >= 0.5.0) and Teams Toolkit (version < 3.3.0) or " +
-                    `cli (version < 0.11.0). Please refer to the help link for how to fix the issue: ${helpLink}`;
+            let message;
+            if (err instanceof Error && (err.message?.includes("CancelledByUser") || err.message?.includes("User declined"))) {
+                message = "The consent process was cancelled. Please grant consent or contact your admin in order to use the application.";
+                this.setState({ consentErrorHeader: "Consent Cancelled!" })
+                this.setState({ consentErrorText: message })
+            } else if (err instanceof Error && err.message?.includes("browser is blocking the url to open")) {
+                message = "The consent process was blocked. If you are an admin, kindly consent in Microsoft Teams and refresh the application here.";
+                this.setState({ consentErrorHeader: "Consent Blocked!" })
+                this.setState({ consentErrorText: message })
+            } else {
+                alert("An error occured!");
             }
-
-            alert("Login failed: " + err);
-            return;
         }
-        await this.initData();
     }
 
-    async checkIsConsentNeeded() {
-        try {
-            await this.teamsfx.getCredential().getToken(this.scope);
-        } catch (error) {
-            this.setState({
-                showLoginPage: true
-            });
-            return true;
-        }
-        this.setState({
-            showLoginPage: false
-        });
-        return false;
-    }
-
-
-    async getPlatformInfo() {
-        return new Promise((resolve, reject) => {
-            microsoftTeams.app.getContext().then((context) => {
-                const name = context.app.host?.name;
-                resolve({ name: name });
-            })
-        })
+    async getHostName() {
+        let context = await microsoftTeams.app.getContext();
+        let hostName = context.app.host?.name;
+        this.setState({ hostName: hostName });
+        return hostName;
     }
 
     async getAllUsers() {
         try {
-            await this.graphClient
-                .api("/users?$top=999")
-                .filter("(onPremisesSyncEnabled eq true OR userType eq 'Member') and accountEnabled eq true")
-                .select(["id", "mail", "displayName", "jobTitle", "mail", "mobilePhone", "department",
-                    "userPrincipalName", "businessPhones", "employeeId", "userType", "accountEnabled", "onPremisesSyncEnabled"])
-                .get(async (error, response) => {
-                    if (!error) {
-                        this.setState({
-                            allUsers: response.value.sort((a,b) => (a.displayName > b.displayName) ? 1 : ((b.displayName > a.displayName) ? -1 : 0))
-                        })
-                        
-                        Promise.resolve();
-                    } else {
-                        console.log("graph error", error);
-                    }
-                });
-        } catch (error) {
-            console.log(error);
+            const response = await this.apiClient.get("allUsers");
+            this.setState({ allUsers: response.data.allUsers });
+        } catch (err) {
+            throw new Error(err?.response?.data?.error);
         }
     }
 
     async getUsersPhotos() {
-        const usersWithPhoto = await Promise.all(
-            this.state.allUsers.map(async (user) => {
-                try {
-                    const response = await this.graphClient
-                        .api(`/users/${user.id}/photo/$value`)
-                        .get()
-                    user.profilePhoto = URL.createObjectURL(response);
-                    return user
-                } catch (error) {
-                    if (error.statusCode === 404) {
-                        user.profilePhoto = "";
-                        return user;
-                    } else {
-                        console.log(error);
-                    }
-                }
+        try {
+            let response = await this.apiClient.get("allUsersWithPhoto");
+            //convert JSON buffer to base64 image string
+            response = response.data.allUsers.map((user) => {
+                if (user.profilePhoto) {
+                    let photo = Buffer(user.profilePhoto);
+                    photo = photo.toString("base64");
+                    user.profilePhoto = photo;
+                };
+                return user;
             })
-        );
 
-        this.setState({
-            allUsers: usersWithPhoto
-        })
+            this.setState({ allUsers: response });
+        } catch (err) {
+            throw new Error(err.response.data.error);
+        }
     }
 
     async setDepartments() {
@@ -217,7 +165,6 @@ class Tab extends React.Component {
             departments: uniqueDepartments
         });
     }
-
 
     async setFilteredUsers(selectedItem) {
 
@@ -259,14 +206,10 @@ class Tab extends React.Component {
         }
     }
 
-
-
     async checkScreenCategory() {
-        const layout = document.getElementsByClassName('layout')[0];
-        const styles = window.getComputedStyle(layout);
-        const marginBottom = styles.marginBottom;
+        let screenSize = window.innerWidth;
 
-        if (marginBottom === "1px") {
+        if (screenSize <= 820) {
             this.setState({
                 onSmallScreen: true,
                 showProfileListing: true,
@@ -281,9 +224,7 @@ class Tab extends React.Component {
         }
     }
 
-
-
-    async handleVisibility() {
+    async handleFilterVisibility() {
         const filterListBox = document.getElementsByClassName('filter-list-box')[0];
         const actionText = document.getElementsByClassName('action-button')[0];
 
@@ -305,7 +246,7 @@ class Tab extends React.Component {
             return usersList.map((user) => {
                 return (
                     <Card
-                        id={user.displayName}
+                        id={user.id}
                         aria-roledescription="card avatar"
                         centered size="small"
                         onClick={(_, event) => {
@@ -327,7 +268,7 @@ class Tab extends React.Component {
                         <Card.Header>
                             <Flex gap="gap.smaller" column hAlign="center">
                                 <Avatar
-                                    image={user.profilePhoto ? user.profilePhoto : defaultPhoto}
+                                    image={user.profilePhoto ? `data:image/jpeg;base64,${user.profilePhoto}` : defaultPhoto}
                                     label=""
                                     name=""
                                     size="larger"
@@ -374,7 +315,7 @@ class Tab extends React.Component {
             await microsoftTeams.chat.openChat(chatParams);
         }
 
-        // Function : Handle opening of Microsoft Teams chat window
+        // Function : Handle opening of Microsoft Teams call window
         const handleAudioCall = async (user) => {
             const callParams = {
                 targets: [`${user.userPrincipalName}`],
@@ -386,25 +327,28 @@ class Tab extends React.Component {
         let userProfileDom = (user) => {
             return (
                 <div className='display-wrapper'>
-                    {this.state.onSmallScreen === true && <div className='buttons-container'>
-                        <button className='display-back-button' onClick={returnButton}><ChevronStartIcon />Back</button>
-                        {microsoftTeams.chat.isSupported() === true && <div className='contact-button'>
-                            <button className='contact-button-chat' onClick={() => handleChatOpening(user)}>Chat</button>
-                            <button onClick={() => handleAudioCall(user)}>Call</button>
-                        </div>}
-                    </div>}
+                    {this.state.onSmallScreen === true &&
+                        <div className='buttons-container'>
+                            <button className='display-back-button' onClick={returnButton}><ChevronStartIcon />Back</button>
+                            {microsoftTeams.chat.isSupported() === true && this.state.selectedUser !== this.state.userInfo.objectId && <div className='contact-button'>
+                                <button className='contact-button-chat' onClick={() => handleChatOpening(user)}>Chat</button>
+                                <button onClick={() => handleAudioCall(user)}>Call</button>
+                            </div>}
+                        </div>
+                    }
 
                     <div className="display-profile">
                         <div >
-                            {this.state.onSmallScreen === false && microsoftTeams.chat.isSupported() === true && <div className='contact-button'>
-                                <button className='contact-button-chat' onClick={() => handleChatOpening(user)}>Chat</button>
-                                <button onClick={() => handleAudioCall(user)}>Call</button>
-                            </div>
+                            {this.state.onSmallScreen === false && microsoftTeams.chat.isSupported() === true && this.state.selectedUser !== this.state.userInfo.objectId &&
+                                <div className='contact-button'>
+                                    <button className='contact-button-chat' onClick={() => handleChatOpening(user)}>Chat</button>
+                                    <button onClick={() => handleAudioCall(user)}>Call</button>
+                                </div>
                             }
                         </div>
                         <Flex column hAlign="center">
                             <div className="photo">
-                                <img src={user.profilePhoto ? user.profilePhoto : defaultPhoto} alt="avatar" />
+                                <img src={user.profilePhoto ? `data:image/jpeg;base64,${user.profilePhoto}` : defaultPhoto} alt="avatar" />
                             </div>
                             <Text content={user.displayName ? user.displayName : "N/A"} weight="bold" size="large" />
                         </Flex>
@@ -423,7 +367,7 @@ class Tab extends React.Component {
         // Function 2: Conditional rendering
         let userProfile = () => {
             if (this.state.selectedUser) {
-                let user = this.state.allUsers.find((user) => user.displayName === this.state.selectedUser);
+                let user = this.state.allUsers.find((user) => user.id === this.state.selectedUser);
                 return userProfileDom(user);
             }
         }
@@ -471,124 +415,106 @@ class Tab extends React.Component {
             })
         }
 
-
         return (
             <div className='tab-page'>
-                {this.state.isConfigured === true && <div>
-                    {this.state.showLoginPage === false &&
-                        <div className='layout'>
+                {this.state.showConsentPage === false &&
+                    <div className='layout'>
 
-                            {/* section 1 */}
-                            {this.state.showProfileListing && <div className='listing'>
+                        {/* section 1 */}
+                        {this.state.showProfileListing && <div className='listing'>
 
-                                {/* Listing header for mobile view */}
-                                <div className='mobile-listing-header'>
-                                    <div className='search-input-container'>
-                                        <input type="text" placeholder='Search employee...'
-                                            onInput={(event) => {
-                                                let searchText = event.target.value;
-                                                //console.log(searchText);
+                            {/* Listing header for mobile view */}
+                            <div className='mobile-listing-header'>
+                                <div className='search-input-container'>
+                                    <input type="text" placeholder='Search employee...'
+                                        onInput={(event) => {
+                                            let searchText = event.target.value;
+                                            this.setState({
+                                                searchText: searchText
+                                            })
+                                            this.setSearchedUsers(searchText);
+                                        }}
+                                    />
+                                </div>
+
+                                <div className='filter-container'>
+                                    <div className='filter-action-text-box'>
+                                        <button className='action-button' onClick={async () => { await this.handleFilterVisibility() }}><FilterIcon /> Click to filter by department</button>
+                                    </div>
+                                    <div className='filter-list-box'>
+                                        <ul>
+                                            {listItems()}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Listing header for desktop view */}
+
+                            <div className='listing-header-wrapper'>
+                                <div className='listing-header'>
+                                    <div className='listing-header-dropdown'>
+                                        <Dropdown
+                                            items={this.state.departments}
+                                            placeholder="Filter by department"
+                                            checkable
+                                            getA11ySelectionMessage={{
+                                                onAdd: item => `${item} has been selected.`,
+                                            }}
+                                            fluid
+                                            onChange={async (_, event) => {
                                                 this.setState({
-                                                    searchText: searchText
-                                                })
-                                                this.setSearchedUsers(searchText);
+                                                    selectedDepartment: event.value
+                                                });
+                                                await this.setFilteredUsers(event.value);
+                                                await this.setSearchedUsers(this.state.searchText);
                                             }}
                                         />
                                     </div>
 
-                                    <div className='filter-container'>
-                                        <div className='filter-action-text-box'>
-                                            <button className='action-button' onClick={async () => { await this.handleVisibility() }}><FilterIcon /> Click to filter by department</button>
-                                        </div>
-                                        <div className='filter-list-box'>
-                                            <ul>
-                                                {listItems()}
-                                            </ul>
-                                        </div>
+                                    <div className='listing-header-search'>
+                                        <Input
+                                            icon={<SearchIcon />}
+                                            placeholder="Search Employee..."
+                                            fluid
+                                            onChange={(_, event) => {
+                                                this.setState({
+                                                    searchText: event.value
+                                                })
+                                                this.setSearchedUsers(event.value);
+                                            }}
+                                        />
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Listing header for desktop view */}
-
-                                <div className='listing-header-wrapper'>
-                                    <div className='listing-header'>
-                                        <div className='listing-header-dropdown'>
-                                            <Dropdown
-                                                items={this.state.departments}
-                                                placeholder="Filter by department"
-                                                checkable
-                                                getA11ySelectionMessage={{
-                                                    onAdd: item => `${item} has been selected.`,
-                                                }}
-                                                fluid
-                                                onChange={async (_, event) => {
-                                                    this.setState({
-                                                        selectedDepartment: event.value
-                                                    });
-                                                    await this.setFilteredUsers(event.value);
-                                                    await this.setSearchedUsers(this.state.searchText);
-                                                }}
-                                            />
-                                        </div>
-
-                                        <div className='listing-header-search'>
-                                            <Input
-                                                icon={<SearchIcon />}
-                                                placeholder="Search Employee..."
-                                                fluid
-                                                onChange={(_, event) => {
-                                                    this.setState({
-                                                        searchText: event.value
-                                                    })
-                                                    this.setSearchedUsers(event.value);
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Profile listing */}
-                                <div className='profile-cards-container'>
-                                    {this.state.onSmallScreen === false && <Flex gap="gap.smaller" wrap="true" hAlign="center">
-                                        {usersList()}
-                                    </Flex>}
-                                    {this.state.onSmallScreen === true && <div className='listing-grid-mobile'>
-                                        {usersList()}
-                                    </div>}
-                                </div>
-                            </div>}
+                            {/* Profile listing */}
+                            <div className='profile-cards-container'>
+                                {this.state.onSmallScreen === false && <Flex gap="gap.smaller" wrap="true" hAlign="center">
+                                    {usersList()}
+                                </Flex>}
+                                {this.state.onSmallScreen === true && <div className='listing-grid-mobile'>
+                                    {usersList()}
+                                </div>}
+                            </div>
+                        </div>}
 
 
-                            {/* Section 2 */}
-                            {this.state.showProfileDisplay === true && <div className='display'>
-                                {userProfile()}
-                            </div>}
-                        </div>
-                    }
+                        {/* Section 2 */}
+                        {this.state.showProfileDisplay === true && <div className='display'>
+                            {userProfile()}
+                        </div>}
+                    </div>
+                }
 
-                    {this.state.showLoginPage === true && <div className="auth">
-                        <Profile userInfo={this.state.userInfo} />
-                        <h2>The Employee Lookup Application</h2>
-                        <Button primary onClick={() => this.loginBtnClick()}>Start</Button>
-                    </div>}
-                </div>}
-
-                {this.state.isConfigured === false &&
+                {this.state.showConsentPage === true &&
                     <div className='install-error-wrapper'>
                         <div className='install-error'>
                             <div><img src={appLogo} alt='Employee Lookup Logo' className='logo' /></div>
-                            <p className='install-error-head'>Almost there! Just a couple configurations required.</p>
-                            <p className='install-error-body'>You are seeing this page because your tenant is not properly configured to run the Employee Lookup application.</p>
-                            <div className='error-decision'>
-                                <div>
-                                    <p>Please contact support using this email</p>
-                                    <p className='contact'>be@relianceinfosystems.com</p>
-                                </div>
-                                <div> Or</div>
-                                <div>
-                                    <p>Visit our product page to learn more</p>
-                                    <div><a className='contact link' href="{{state.fx-resource-frontend-hosting.endpoint}}" target="_blank" rel="noopener noreferrer">Click to visit our product page</a></div>
-                                </div>
+                            <p className='install-error-head'>{(this.state.consentErrorHeader) ? this.state.consentErrorHeader : "Consent Required!"}</p>
+                            <p className='install-error-body'>{(this.state.consentErrorText) ? this.state.consentErrorText : "To continue using the app, some permissions are needed. Kindly click the consent button below if you are an admin or contact an administrator."}</p>
+                            <div className='consent-button-wrapper'>
+                                <button className='consent-button' onClick={() => this.loginBtnClick()}>Consent</button>
                             </div>
                         </div>
                     </div>
@@ -599,4 +525,4 @@ class Tab extends React.Component {
     }
 }
 
-export default Tab;
+export default TabImplentation;
