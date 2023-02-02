@@ -9,3 +9,4 @@ node_modules
 /.fx/states/state.*.json
 build
 subscriptionInfo.json
+.backup
