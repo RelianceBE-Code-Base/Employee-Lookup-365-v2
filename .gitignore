@@ -10,3 +10,7 @@ node_modules
 build
 subscriptionInfo.json
 .backup
+env/.env.*.user
+env/.env.local
+.backup/*
+/devTools/
