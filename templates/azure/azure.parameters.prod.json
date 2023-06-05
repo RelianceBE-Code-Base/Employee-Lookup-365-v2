@@ -4,7 +4,7 @@
     "parameters": {
       "provisionParameters": {
         "value": {
-          "resourceBaseName": "employeelookup111",
+          "resourceBaseName": "employeelookup${{RESOURCE_SUFFIX}}",
           "m365ClientId": "${{AAD_APP_CLIENT_ID}}",
           "m365ClientSecret": "${{SECRET_AAD_APP_CLIENT_SECRET}}",
           "m365TenantId": "${{AAD_APP_TENANT_ID}}",
